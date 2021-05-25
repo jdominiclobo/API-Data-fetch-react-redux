@@ -1,25 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import { connect, useDispatch, useSelector } from "react-redux";
+import { bindActionCreators } from "redux";
+import "./App.css";
+import { actionCreators } from "./app/actions/index";
 
-function App() {
+function App(props) {
+  console.log("app props", props.authors);
+  const authors = useSelector((state) => state.authors);
+  const dispatch = useDispatch();
+
+  const { fetchAuthors, getAuthors } = bindActionCreators(
+    actionCreators,
+    dispatch
+  );
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Article Authors</h1>
+      {!props.authors ? (
+        <h2>Loading . . . </h2>
+      ) : (
+        <div>
+          <ul>
+            {props.authors.map((author) => {
+              return <li key={author.created_at}>{author.author}</li>;
+            })}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  return {
+    authors: state.authors,
+  };
+};
+
+export default connect(mapStateToProps)(App);
